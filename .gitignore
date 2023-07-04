@@ -1,2 +1,3 @@
 venv/
-AD_SERVER/AD_SERVER/secrets.json
+AD_Server/AD_Server/secrets.json
+Global_AD_Server/Global_AD_Server/secrets.json
