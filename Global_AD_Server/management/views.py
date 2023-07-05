@@ -12,17 +12,23 @@ class MediaTypeManageView(View):
         response_data = {}
         form = MediaTypeInfoForm(request.POST)
         if form.is_valid():
-            mediatype = MediaTypeInfo()
-            mediatype.id = form.cleaned_data['id']
-            mediatype.width = form.cleaned_data['width']
-            mediatype.height = form.cleaned_data['height']
-            mediatype.type = form.cleaned_data['type']
-            mediatype.save()
-
-            response_data['code'] = "0"
-            response_data['msg'] = "OK" 
-            return JsonResponse(response_data)
+            obj, created = MediaTypeInfo.objects.get_or_create(
+                id = form.cleaned_data['id'],
+                width = form.cleaned_data['width'],
+                height = form.cleaned_data['height'],
+                type = form.cleaned_data['type']
+            )
+            if created:
+                mediatype.save()
+                response_data['code'] = "0"
+                response_data['msg'] = "OK" 
+                return JsonResponse(response_data)
+            else:
+                response_data['code'] = "8"
+                response_data['msg'] = "Duplicated Data"
+                return JsonResponse(response_data)
         else:
             response_data['code'] = "9"
             response_data['msg'] = "Form Not Invalied"
             return JsonResponse(response_data)
+
