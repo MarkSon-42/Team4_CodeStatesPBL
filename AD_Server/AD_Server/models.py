@@ -13,7 +13,6 @@ class AdInfo(models.Model):
     click_cnt = models.IntegerField(blank=True, null=True)
     url = models.CharField(max_length=255, blank=True, null=True)
     content_path = models.CharField(max_length=255, blank=True, null=True)
-    type = models.CharField(max_length=45, blank=True, null=True)
 
     class Meta:
         managed = False
