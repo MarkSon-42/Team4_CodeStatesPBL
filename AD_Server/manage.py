@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# AD_Server : initial commit test(minwoo-branch)
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
