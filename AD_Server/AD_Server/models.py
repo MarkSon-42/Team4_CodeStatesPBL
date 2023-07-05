@@ -1,7 +1,6 @@
 from django.db import models
 
 
-
 class AdInfo(models.Model):
     media_type = models.ForeignKey('MediaTypeInfo', models.DO_NOTHING, blank=True, null=True)
     name = models.CharField(max_length=45, blank=True, null=True)
