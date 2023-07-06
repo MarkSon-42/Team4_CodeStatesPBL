@@ -1,0 +1,447 @@
+<!-- {% load mathfilters %} -->
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>AD Manager Platform</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+        <style>
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container mt-5, mb-5">
+            <h4 class="text-center mt-5"><b>AD Manager Platform - AD List</b></h4>
+
+            <div class="text-end">
+                <a type="button" class="btn btn-block btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPostModal">ADD</a>
+                <a type="button" class="btn btn-block btn-outline-success" data-bs-toggle="modal" data-bs-target="#adTestModal">AD TEST</a>
+            </div>
+
+            <table class="table table-hover mt-5">
+                <thead>
+                    <tr class="table-dark">
+                        <th scope="col">IDX</th>
+                        <th scope="col">TITLE</th>
+                        <th scope="col">TEXT</th>
+                        <th scope="col">EXPOSURE DATETIME</th>
+                        <th scope="col">COUNT</th>
+                        <th scope="col">REGDATE</th>
+                        <th scope="col">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 광고 DB 받아옴 -->
+                        <tr>
+                            <td>1</td>
+                            <td>코드스테이츠 신규강좌</td>
+                            <td>국민대 AD 시스템 PBL</td>
+                            <td>2023-06-26 10:00:00 ~ 2023-07-04 18:00:00</td>
+                            <td>3000</td>
+                            <td>2023-06-26 09:30:00</td>
+                            <td>
+                                <a type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#detailModal">상세</a>
+                                <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal">수정</a>
+                                <button type="button" class="btn btn-danger" onclick="deletePost('코드스테이츠 신규강좌')">삭제</button>
+                            </td>
+                        </tr>
+                </tbody>
+            </table>
+
+            <!-- <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if bset.has_previous %}
+                    <li class="page-item"><a class="page-link" href="{% url 'index' %}?page=1">First</a></li>
+                    <li class="page-item"><a class="page-link" href="{% url 'index' %}?page={{ bset.previous_page_number }}">Prev</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link">First</a></li>
+                        <li class="page-item disabled"><a class="page-link">Prev</a></li>
+                    {% endif %}
+            
+                    {% for i in bset.paginator.page_range %}
+                        {% if i >= bset.number|sub:4 and bset.number|add:4 >= i %}
+                            <li class="page-item {% if i == bset.number %} active {% endif %}"><a class="page-link" href="{% url 'index' %}?page={{i}}">{{i}}</a></li>
+                        {% endif %}
+                    {% endfor %}
+            
+                    {% if bset.has_next %}
+                        <li class="page-item"><a class="page-link" href="{% url 'index' %}?page={{ bset.next_page_number }}">Next</a></li>
+                        <li class="page-item"><a class="page-link" href="{% url 'index' %}?page={{ bset.paginator.num_pages }}">Last</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link">Next</a></li>
+                        <li class="page-item disabled"><a class="page-link">Last</a></li>
+                    {% endif %}
+                </ul>
+            </nav> -->
+
+            <form>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <select class="form-select" name="cate">
+                            <option value="sub" {% if cate == "sub" %} selected {% endif %}>TITLE</option>
+                            <option value="con" {% if cate == "con" %} selected {% endif %}>TEXT</option>
+                            <option value="cnt" {% if cate == "cnt" %} selected {% endif %}>COUNT</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="text" name="kw" value="" class="form-control" placeholder="검색어를 입력해주세요">
+                    </div>
+                    <div class="col-sm-1">
+                        <button class="btn btn-dark" style="width: 100%;">검색</button>
+                    </div>
+                    <div class="col-sm-1">
+                        <a class="btn btn-secondary" href="" style="width: 100%;">초기화</a>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Add Post Modal -->
+            <div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addPostModalLabel">Add AD</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Add post form -->
+                            <form>
+                                <!-- Add post form fields -->
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Title</label>
+                                    <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="text" class="form-label">Text</label>
+                                    <textarea class="form-control" id="text" name="text" rows="3" placeholder="Enter text"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <b>Exposure DateTime</b><br>
+                                    <label for="startDate" class="form-label">Start Date</label>
+                                    <input type="datetime-local" class="form-control" id="startDate" name="startDate">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="endDate" class="form-label">End Date</label>
+                                    <input type="datetime-local" class="form-control" id="endDate" name="endDate">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="count" class="form-label">Count</label>
+                                    <input type="number" class="form-control" id="count" name="count" placeholder="Enter count">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="exposure" class="form-label">Regdate</label>
+                                    <input type="datetime-local" class="form-control" id="exposure" name="exposure">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AD Test Modal -->
+            <div class="modal fade" id="adTestModal" tabindex="-1" aria-labelledby="adTestModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="adTestModalLabel">AD Test</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Target 전송 버튼 -->
+                            <div class="text-center d-grid gap-2 col-6 mx-auto" >
+                                <button id="sendTargetBtn" class="btn btn-secondary">Target 정보 전송</button>
+                            </div>
+                            
+                            <!-- Result와 JSON 불러올 틀 -->
+                            <div id="jsonTextarea" class="modal-body">
+                                <h5>Result</h5>
+                                <pre id="result"></pre>
+                                <textarea id="resultTextarea" rows="10" readonly class="form-control"></textarea>
+                            </div>
+
+                            <!-- Web View -->
+                            <div id="webViewContainer">
+                                <div id="webView"></div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#webViewModal">Web View</a>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Web View Modal -->
+            <div class="modal fade" id="webViewModal" tabindex="-1" aria-labelledby="webViewModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="webViewModalLabel">Web View</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                            <div id="webContent">
+                                <div class="ad-image-container">
+                                    <h3>Main AD</h3>
+                                    <img src="a" alt="Main AD" id="mainAdImage" class="ad-image">
+                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                </div>
+                                <div class="ad-image-container">
+                                    <h3>Main AD</h3>
+                                    <img src="a" alt="Main AD" id="sideAdImage1" class="ad-image">
+                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                </div>
+                                <div class="ad-image-container">
+                                    <h3>Main AD</h3>
+                                    <img src="a" alt="Main AD" id="sideAdImage2" class="ad-image">
+                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                </div>
+                                <div class="ad-image-container">
+                                    <h3>Main AD</h3>
+                                    <img src="a" alt="Main AD" id="sideAdImage3" class="ad-image">
+                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                </div>
+                            </div>
+                            
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 상세 Modal -->
+            <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailModalLabel">API Result Json String</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <pre id="jsonString"></pre>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 수정 Modal -->
+            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">AD 수정</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="editType" class="form-label">Type</label>
+                                    <select class="form-select" id="editType">
+                                        <option value="type1">main slot</option>
+                                        <option value="type2">side slot1</option>
+                                        <option value="type3">side slot2</option>
+                                        <option value="type4">side slot3</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editTitle" class="form-label">Title</label>
+                                    <input type="text" class="form-control" id="editTitle">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editText" class="form-label">Text</label>
+                                    <textarea class="form-control" id="editText" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editStartDate" class="form-label">Start Date</label>
+                                    <input type="datetime-local" class="form-control" id="editStartDate">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editEndDate" class="form-label">End Date</label>
+                                    <input type="datetime-local" class="form-control" id="editEndDate">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editCount" class="form-label">Count</label>
+                                    <input type="number" class="form-control" id="editCount">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="exposure" class="form-label">Regdate</label>
+                                    <input type="datetime-local" class="form-control" id="exposure" name="exposure">
+                                </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                                    <button type="button" class="btn btn-primary" onclick="saveChanges()">저장</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+        
+        <!-- Add Post -->
+        <script>
+            var addPostModal = document.getElementById('addPostModal');
+            addPostModal.addEventListener('show.bs.modal', function () {
+                document.querySelector('.overlay').style.display = 'block';
+            });
+            addPostModal.addEventListener('hidden.bs.modal', function () {
+                document.querySelector('.overlay').style.display = 'none';
+            });
+        </script>
+
+        <!-- 상세 -->
+        <script>
+                async function showDetail(jsonUrl) {
+                    // 서버로부터 JSON 데이터 가져오기
+                    await fetch('#')
+                        .then(response => response.json())
+                        .then(data => {
+                            // JSON 데이터를 문자열로 변환하여 모달 창에 표시
+                            document.getElementById("jsonString").textContent = JSON.stringify(data, null, 2);
+                            // 모달 열기
+                            $('#detailModal').modal('show');
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }
+        </script>
+
+        <!-- AD Test -->
+        <script>
+            var jsonData;
+            // JSON 파일 로드
+            async function clickTest() {
+                await fetch('http://172.20.10.12:8080/test_list/adlist')
+                    .then(function(response) {
+                        if (!response.ok) { // 응답이 성공(200-299 범위)가 아닌 경우
+                            throw new Error('Network response was not OK.');
+                        }
+                        return response.json(); // JSON 형식으로 변환하여 반환
+                    })
+                    .then(function(data) {
+                        jsonData = data;
+                        displayJSON();
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                    });
+            }
+          
+            // JSON 데이터 표시
+            async function displayJSON() {
+                await clickTest();
+            //   var result = document.getElementById('result');
+            //   result.textContent = JSON.stringify(jsonData, null, 2);
+                var textarea = document.getElementById('resultTextarea');
+                textarea.value = JSON.stringify(jsonData, null, 2)
+
+              
+            }
+          
+            // Send Target Button
+            var sendTargetBtn = document.getElementById('sendTargetBtn');
+            sendTargetBtn.addEventListener('click', function () {
+                displayJSON();
+            });
+
+        </script>
+
+        <!-- Web View -->
+        <script>
+
+            const adList = [
+                {
+                    adId: 1,
+                    src: "https://www.treehugger.com/thmb/vtHRAohwtwiPKA_5weRwLoGy95E=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/portrait-of-male-lion-135787269-85149ca53052474bb429fa73fdc381dc.jpg",
+                    type: 'main'
+                },
+                {
+                    adId: 2,
+                    src: "a",
+                    type: 'sub'
+                },
+                {
+                    adId: 3,
+                    src: "a",
+                    type: 'sub'
+                },
+                {
+                    adId: 4,
+                    src: "a",
+                    type: 'sub'
+                }
+            ];
+
+            const json_data = JSON.stringify(adList);
+            console.log(json_data);
+            var idx = 1
+
+            for (var i=0; i<4; i++){
+                if(adList[i].type == "main"){
+                    document.getElementById("mainAdImage").src = adList[i].src;
+                }
+                if(adList[i].type == "sub"){
+                    document.getElementById("sideAdImage"+idx.toString()).src = adList[i].src;
+                    idx++
+                }
+            }
+            function openWebViewModal() {               
+                // 웹 뷰 모달 창 열기
+                $('#webViewModal').modal('show');
+            }
+
+            function hitAd(ad_id) {
+                // 히트 전송 로직 구현
+                //localhost:8080/Hit?adid={}
+
+                console.log("Hit Ad: ", ad_id);
+                fetch(     localhost:8080/Hit?adid={32}.then(response~~~~))
+
+            }
+        </script>
+
+    
+        <!-- CRUD: Delete -->
+        <script>
+            function deletePost(title) {
+            // Confirm post deletion
+            var deleteConfirmation = confirm((title ? title + " " : "") + "삭제하시겠습니까?");
+        
+            if (deleteConfirmation) {
+                // Get the parent element of the delete button (the post container)
+                var postContainer = event.target.closest(".card");
+    
+                // Remove the post container element from the page
+                if (postContainer) {
+                    postContainer.remove();
+                    console.log("Post deleted: " + title);
+                }
+            }
+        }
+        </script>
+    </body>
+</html>
