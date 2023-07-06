@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.views import View
 from django.views.generic import ListView
 from .models import AdInfo
+
+
 class AdListView(View):
     def get(self, request):
         ads = AdInfo.objects.all() #이 안에 AdInfo테이블안에 모든 튜플을 가져다 놓음
