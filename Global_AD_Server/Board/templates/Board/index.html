@@ -16,6 +16,18 @@
                 z-index: 9999;
                 background-color: rgba(0, 0, 0, 0.5);
             }
+            .ad-image-container {
+                display: flex;
+                align-items: flex-start;
+            }
+
+            .ad-image-container .ad-image {
+                margin-right: 10px;
+            }
+
+            .ad-image-container .btn {
+                align-self: flex-end;
+            }
         </style>
     </head>
     <body>
@@ -41,19 +53,21 @@
                 </thead>
                 <tbody>
                     <!-- 광고 DB 받아옴 -->
+                        {% for post in posts %}
                         <tr>
-                            <td>1</td>
-                            <td>코드스테이츠 신규강좌</td>
-                            <td>국민대 AD 시스템 PBL</td>
-                            <td>2023-06-26 10:00:00 ~ 2023-07-04 18:00:00</td>
-                            <td>3000</td>
-                            <td>2023-06-26 09:30:00</td>
+                            <td>{{ post.id }}</td>
+                            <td>{{ post.title }}</td>
+                            <td>{{ post.text }}</td>
+                            <td>{{ post.exposure_datetime }}</td>
+                            <td>{{ post.count }}</td>
+                            <td>{{ post.regdate }}</td>
                             <td>
                                 <a type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#detailModal">상세</a>
                                 <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal">수정</a>
                                 <button type="button" class="btn btn-danger" onclick="deletePost('코드스테이츠 신규강좌')">삭제</button>
                             </td>
                         </tr>
+                        {% endfor %}
                 </tbody>
             </table>
 
@@ -117,12 +131,23 @@
                             <form>
                                 <!-- Add post form fields -->
                                 <div class="mb-3">
+                                    <label for="media_type_id" class="form-label">Type</label>
+                                    <select class="form-select" id="editType">
+                                        <option value="1">1 - main slot</option>
+                                        <option value="2">2 - side slot</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
                                     <label for="title" class="form-label">Title</label>
                                     <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
                                 </div>
                                 <div class="mb-3">
                                     <label for="text" class="form-label">Text</label>
                                     <textarea class="form-control" id="text" name="text" rows="3" placeholder="Enter text"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="advertiser" class="form-label">Advertiser</label>
+                                    <input type="text" class="form-control" id="advertiser" name="advertiser" placeholder="Enter advertiser">
                                 </div>
                                 <div class="mb-3">
                                     <b>Exposure DateTime</b><br>
@@ -139,9 +164,14 @@
                                     <input type="number" class="form-control" id="count" name="count" placeholder="Enter count">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="exposure" class="form-label">Regdate</label>
-                                    <input type="datetime-local" class="form-control" id="exposure" name="exposure">
+                                    <label for="url" class="form-label">URL</label>
+                                    <input type="text" class="form-control" id="url" name="url" placeholder="Enter url">
                                 </div>
+                                <div class="mb-3">
+                                    <label for="content_path" class="form-label">Content Path</label>
+                                    <input type="text" class="form-control" id="content_path" name="content_path" placeholder="Enter content path">
+                                </div>
+                                
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -179,7 +209,7 @@
                             </div>
 
                             <div class="modal-footer">
-                                <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#webViewModal">Web View</a>
+                                <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#webViewModal" id="webViewOpenBtn" onclick="clickWebView()">Web View</a>
                                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
                             </div>
                         </div>
@@ -196,30 +226,32 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-
                             <div id="webContent">
                                 <div class="ad-image-container">
-                                    <h3>Main AD</h3>
-                                    <img src="a" alt="Main AD" id="mainAdImage" class="ad-image">
+                                    <h5>Main AD</h5>
+                                    <img src="#" alt="Main AD" id="mainAdImage" class="ad-image">
                                     <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
                                 </div>
+                                <hr>
                                 <div class="ad-image-container">
-                                    <h3>Main AD</h3>
-                                    <img src="a" alt="Main AD" id="sideAdImage1" class="ad-image">
+                                    <h5>sub AD1</h5>
+                                    <img src="#" alt="sub AD1" id="1" class="ad-image">
                                     <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
                                 </div>
+                                <hr>
                                 <div class="ad-image-container">
-                                    <h3>Main AD</h3>
-                                    <img src="a" alt="Main AD" id="sideAdImage2" class="ad-image">
+                                    <h5>sub AD2</h5>
+                                    <img src="#" alt="sub AD2" id="2" class="ad-image">
                                     <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
                                 </div>
+                                <hr>
                                 <div class="ad-image-container">
-                                    <h3>Main AD</h3>
-                                    <img src="a" alt="Main AD" id="sideAdImage3" class="ad-image">
+                                    <h5>sub AD3</h5>
+                                    <img src="#" alt="sub AD3" id="3" class="ad-image">
                                     <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
                                 </div>
                             </div>
-                            
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
                         </div>
@@ -258,10 +290,8 @@
                                 <div class="mb-3">
                                     <label for="editType" class="form-label">Type</label>
                                     <select class="form-select" id="editType">
-                                        <option value="type1">main slot</option>
-                                        <option value="type2">side slot1</option>
-                                        <option value="type3">side slot2</option>
-                                        <option value="type4">side slot3</option>
+                                        <option value="1">1 - main slot</option>
+                                        <option value="2">2 - side slot</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -271,6 +301,10 @@
                                 <div class="mb-3">
                                     <label for="editText" class="form-label">Text</label>
                                     <textarea class="form-control" id="editText" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="advertiser" class="form-label">Advertiser</label>
+                                    <input type="text" class="form-control" id="advertiser" name="advertiser" placeholder="Enter advertiser">
                                 </div>
                                 <div class="mb-3">
                                     <label for="editStartDate" class="form-label">Start Date</label>
@@ -372,43 +406,90 @@
 
         <!-- Web View -->
         <script>
+            //............
+            const btn = document.getElementById("webViewOpenBtn");
+            btn.addEventListener('click',clickWebView);
+            function clickWebView() {
+                console.log("click");
+                const adList = [
+                    {
+                        "id": 11,
+                        "media_type_id": 'main',
+                        "name": "a123456789",
+                        "startDate": null,
+                        "endDate": null,
+                        "modDate": null,
+                        "definition": "aaaa",
+                        "cost": 200,
+                        "advertiser": "olivyoung",
+                        "click_count": null,
+                        "url": "http:...",
+                        "content_path": "https://img.freepik.com/free-vector/cute-dinosaurs-cartoon-character-with-wild-dinos-font-banner_1308-58100.jpg?w=1800&t=st=1688625584~exp=1688626184~hmac=fa2bbbd07386614fc9fcae5979852c4033701eb6e088130fdead22052e9e32fd"
+                    },
+                    {
+                        "id": 6,
+                        "media_type_id": 'sub',
+                        "name": "a1234",
+                        "startDate": null,
+                        "endDate": null,
+                        "modDate": null,
+                        "definition": "aaaa",
+                        "cost": 200,
+                        "advertiser": "olivyoung",
+                        "click_count": null,
+                        "url": "http:...",
+                        "content_path": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNSu1rysnBArHe_sqzFHQphxgT2Kf2Tg-NFw&usqp=CAU"
+                    },
+                    {
+                        "id": 5,
+                        "media_type_id": 'sub',
+                        "name": "a123",
+                        "startDate": null,
+                        "endDate": null,
+                        "modDate": null,
+                        "definition": "aaaa",
+                        "cost": 200,
+                        "advertiser": "olivyoung",
+                        "click_count": null,
+                        "url": "http:...",
+                        "content_path": "https://img.freepik.com/free-vector/coloured-turtles-collection_1308-902.jpg?w=1060&t=st=1688625674~exp=1688626274~hmac=d7b186be599d07d9bb42f9ff0f44a23f30a663cfa1ed601b516636e4d2c3b685"
+                    },
+                    {
+                        "id": 12,
+                        "media_type_id": 'sub',
+                        "name": "a1234567890",
+                        "startDate": null,
+                        "endDate": null,
+                        "modDate": null,
+                        "definition": "aaaa",
+                        "cost": 200,
+                        "advertiser": "olivyoung",
+                        "click_count": null,
+                        "url": "http:...",
+                        "content_path": "https://img.freepik.com/free-vector/coloured-turtles-collection_1308-902.jpg?w=1060&t=st=1688625674~exp=1688626274~hmac=d7b186be599d07d9bb42f9ff0f44a23f30a663cfa1ed601b516636e4d2c3b685"
+                    }
+                ]
 
-            const adList = [
-                {
-                    adId: 1,
-                    src: "https://www.treehugger.com/thmb/vtHRAohwtwiPKA_5weRwLoGy95E=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/portrait-of-male-lion-135787269-85149ca53052474bb429fa73fdc381dc.jpg",
-                    type: 'main'
-                },
-                {
-                    adId: 2,
-                    src: "a",
-                    type: 'sub'
-                },
-                {
-                    adId: 3,
-                    src: "a",
-                    type: 'sub'
-                },
-                {
-                    adId: 4,
-                    src: "a",
-                    type: 'sub'
-                }
-            ];
-
-            const json_data = JSON.stringify(adList);
-            console.log(json_data);
-            var idx = 1
-
-            for (var i=0; i<4; i++){
-                if(adList[i].type == "main"){
-                    document.getElementById("mainAdImage").src = adList[i].src;
-                }
-                if(adList[i].type == "sub"){
-                    document.getElementById("sideAdImage"+idx.toString()).src = adList[i].src;
-                    idx++
+                console.log(adList);
+                const json_data = JSON.stringify(adList);
+                console.log(json_data);
+                var idx = 1
+                console.log("외않되")
+                for (var i=0; i<4; i++){
+                    if(adList[i].media_type_id == "main"){
+                        console.log("main")
+                        console.log(adList[i].content_path);
+                        document.getElementById("mainAdImage").src = adList[i].content_path;
+                    }
+                    if(adList[i].media_type_id == "sub"){
+                        console.log("sub")
+                        document.getElementById(idx.toString()).src = adList[i].content_path;
+                        idx++
+                    }
                 }
             }
+
+            //..................
             function openWebViewModal() {               
                 // 웹 뷰 모달 창 열기
                 $('#webViewModal').modal('show');
@@ -419,7 +500,6 @@
                 //localhost:8080/Hit?adid={}
 
                 console.log("Hit Ad: ", ad_id);
-                fetch(     localhost:8080/Hit?adid={32}.then(response~~~~))
 
             }
         </script>

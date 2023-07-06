@@ -19,7 +19,7 @@ class MediaTypeManageView(View):
                 type = form.cleaned_data['type']
             )
             if created:
-                mediatype.save()
+                obj.save()
                 response_data['code'] = "0"
                 response_data['msg'] = "OK" 
                 return JsonResponse(response_data)
@@ -47,7 +47,7 @@ class AdManageView(View):
                 definition = form.cleaned_data['definition'],
                 cost = form.cleaned_data['cost'],
                 advertiser = form.cleaned_data['advertiser'],
-                mod_date = form.cleaned_data['mod_date'],
+                #mod_date = form.cleaned_data['mod_date'],
                 click_cnt = form.cleaned_data['click_cnt'],
                 url = form.cleaned_data['url'],
                 content_path = form.cleaned_data['content_path']
