@@ -17,31 +17,41 @@ pymysql.install_as_MySQLdb()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
 secret_file = os.path.join(BASE_DIR, 'AD_Server/secrets.json')
+# secrets.json 파일의 경로를 지정함.
+
 with open(secret_file) as f:
     secrets = json.loads(f.read())
+    # secrets.json 파일을 열고 내용을 읽어와 JSON 형식으로 파싱.
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = secrets["django_key"]
+# 운영 환경에서 사용되는 장고 비밀 키를 설정
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+# 접근을 허용할 호스트를 설정. '*'는 모든 호스트를 허용.
 
 
-# Application definition
+# 어플리케이션 정의
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    # 'admin'은 Django 관리자 앱
     'django.contrib.auth',
+    # 'auth'은 사용자 인증을 다루는 앱
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'test_list.apps.TestListConfig',
+    'send_list.apps.SendListConfig',
+    # 'test_list.apps.TestListConfig'는 사용자 정의 앱인 'test_list'의 설정
+    'corsheaders', 
+    # 'corsheaders'는 CORS(Cross-Origin Resource Sharing) 관련 앱
 ]
 
 MIDDLEWARE = [
@@ -52,9 +62,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',     # CORS 관련 추가
 ]
 
 ROOT_URLCONF = 'AD_Server.urls'
+# URL패턴을 처리할 루트 URLconf를 설정.
+# 'AD_Server.urls'는 프로젝트의 URL 설정 파일을 지정
+
 
 TEMPLATES = [
     {
@@ -81,10 +95,12 @@ WSGI_APPLICATION = 'AD_Server.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        # 'ENGINE'은 사용할 데이터베이스 엔진을 지정
         'NAME': 'AD_SERVER',
         'USER': 'pbl',
         'PASSWORD': secrets["db_password"],
         'HOST': secrets["db_host"],
+        # 'HOST'는 데이터베이스 서버의 호스트를 지정. 호스트 정보는 'secrets' 변수에서 가져옴.
         'PORT': '3306',
     }
 }
@@ -130,3 +146,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True

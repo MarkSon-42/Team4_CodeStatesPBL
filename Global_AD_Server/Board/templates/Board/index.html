@@ -39,7 +39,7 @@
                 <a type="button" class="btn btn-block btn-outline-success" data-bs-toggle="modal" data-bs-target="#adTestModal">AD TEST</a>
             </div>
 
-            <table class="table table-hover mt-5">
+            <table class="table table-hover mt-5" id="data-table">
                 <thead>
                     <tr class="table-dark">
                         <th scope="col">IDX</th>
@@ -47,27 +47,27 @@
                         <th scope="col">TEXT</th>
                         <th scope="col">EXPOSURE DATETIME</th>
                         <th scope="col">COUNT</th>
-                        <th scope="col">REGDATE</th>
+                        <th scope="col">ADVERTISER</th>
                         <th scope="col">ACTION</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- 광고 DB 받아옴 -->
-                        {% for post in posts %}
+                    <!-- // 게시판 리스트 가져오기
+                    // 'http://localhost:8080/test_list/adlist' : 게시판에 들어가는 것들 -->
                         <tr>
-                            <td>{{ post.id }}</td>
-                            <td>{{ post.title }}</td>
-                            <td>{{ post.text }}</td>
-                            <td>{{ post.exposure_datetime }}</td>
-                            <td>{{ post.count }}</td>
-                            <td>{{ post.regdate }}</td>
+                            <!-- <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>6</td>
                             <td>
                                 <a type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#detailModal">상세</a>
                                 <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal">수정</a>
                                 <button type="button" class="btn btn-danger" onclick="deletePost('코드스테이츠 신규강좌')">삭제</button>
-                            </td>
+                            </td> -->
                         </tr>
-                        {% endfor %}
                 </tbody>
             </table>
 
@@ -367,9 +367,65 @@
         <!-- AD Test -->
         <script>
             var jsonData;
+            // 게시판 리스트 가져오기
+            // 'http://172.20.10.12:8080/test_list/adlist' : 게시판에 들어가는 것들
+
+
+            // main.js
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchData();
+});
+
+async function fetchData() {
+    //
+        try {
+            const response = await fetch('http://localhost:8080/test_list/adlist');  // 실제 서버 주소와 데이터 엔드포인트로 수정
+            if (!response.ok) {
+                throw new Error('Network response was not OK.');
+            }
+            const data = await response.json();
+            console.log(data);
+            createTable(data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function createTable(data) {
+        const tableBody = document.querySelector('#data-table tbody');
+        console.log(typeof(data));
+        console.log(typeof(data.data));
+        console.log(JSON.stringify(data));
+        console.log(JSON.parse(data.data));
+
+        
+
+        JSON.parse(data.data).forEach(function(item,index) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index+1}</td>
+                <td>${item.fields.name}</td>
+                <td>${item.fields.definition}</td>
+                <td>${item.fields.start_date+' ~ '+item.fields.end_date}</td>
+                <td>${item.fields.click_cnt}</td>
+                <td>${item.fields.advertiser}</td>
+                <td>
+                    <a type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#detailModal">상세</a>
+                    <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal">수정</a>
+                    <button type="button" class="btn btn-danger" onclick="deletePost('코드스테이츠 신규강좌')">삭제</button>
+                </td>
+                <!-- 추가 필드들 -->
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+//
+
+
             // JSON 파일 로드
             async function clickTest() {
-                await fetch('http://172.20.10.12:8080/test_list/adlist')
+                await fetch('http://localhost:8080/send_list/send_ad_list')
                     .then(function(response) {
                         if (!response.ok) { // 응답이 성공(200-299 범위)가 아닌 경우
                             throw new Error('Network response was not OK.');
@@ -387,7 +443,7 @@
           
             // JSON 데이터 표시
             async function displayJSON() {
-                await clickTest();
+            // await clickTest();
             //   var result = document.getElementById('result');
             //   result.textContent = JSON.stringify(jsonData, null, 2);
                 var textarea = document.getElementById('resultTextarea');
@@ -401,6 +457,8 @@
             sendTargetBtn.addEventListener('click', function () {
                 displayJSON();
             });
+
+            clickTest();
 
         </script>
 
