@@ -4,7 +4,6 @@ from django.db import models
 
 # Create your models here.
 class AdInfo(models.Model):
-    id = models.IntegerField(primary_key=True)
     media_type = models.ForeignKey('MediaTypeInfo', models.DO_NOTHING, blank=True, null=True)
     name = models.CharField(max_length=45, blank=True, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
@@ -16,7 +15,6 @@ class AdInfo(models.Model):
     click_cnt = models.IntegerField(blank=True, null=True)
     url = models.CharField(max_length=255, blank=True, null=True)
     content_path = models.CharField(max_length=255, blank=True, null=True)
-    type = models.CharField(max_length=45, blank=True, null=True)
 
     class Meta:
         managed = False
