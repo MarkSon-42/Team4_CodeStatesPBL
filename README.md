@@ -1,2 +1,2 @@
 # Team4_CodeStatesPBL
-Semi-Project Based Django
+MVC Framework(Django)를 사용하여 광고서버 개발
