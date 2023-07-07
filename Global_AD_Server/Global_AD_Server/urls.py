@@ -19,6 +19,11 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+<<<<<<< HEAD
     path('management/', include('management.urls')),
     path('board/', include('board.urls')),
+=======
+    path('board/', include('board.urls')),
+    path('management/', include('management.urls')),
+>>>>>>> origin/eojin-branch
 ]

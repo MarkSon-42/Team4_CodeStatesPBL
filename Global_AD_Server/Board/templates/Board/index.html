@@ -16,6 +16,24 @@
                 z-index: 9999;
                 background-color: rgba(0, 0, 0, 0.5);
             }
+
+            .ad-image-container {
+                display: flex;
+                align-items: flex-start;
+            }
+
+            .ad-image-container .ad-image {
+                margin-right: 10px;
+            }
+
+            .ad-image-container .btn {
+                align-self: flex-end;
+            }
+
+            .adImage {
+                width: 300px;
+                height: auto;
+            }
         </style>
     </head>
     <body>
@@ -27,7 +45,7 @@
                 <a type="button" class="btn btn-block btn-outline-success" data-bs-toggle="modal" data-bs-target="#adTestModal">AD TEST</a>
             </div>
 
-            <table class="table table-hover mt-5">
+            <table class="table table-hover mt-5" id="data-table">
                 <thead>
                     <tr class="table-dark">
                         <th scope="col">IDX</th>
@@ -35,25 +53,11 @@
                         <th scope="col">TEXT</th>
                         <th scope="col">EXPOSURE DATETIME</th>
                         <th scope="col">COUNT</th>
-                        <th scope="col">REGDATE</th>
+                        <th scope="col">ADVERTISER</th>
                         <th scope="col">ACTION</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- 광고 DB 받아옴 -->
-                        <tr>
-                            <td>1</td>
-                            <td>코드스테이츠 신규강좌</td>
-                            <td>국민대 AD 시스템 PBL</td>
-                            <td>2023-06-26 10:00:00 ~ 2023-07-04 18:00:00</td>
-                            <td>3000</td>
-                            <td>2023-06-26 09:30:00</td>
-                            <td>
-                                <a type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#detailModal">상세</a>
-                                <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal">수정</a>
-                                <button type="button" class="btn btn-danger" onclick="deletePost('코드스테이츠 신규강좌')">삭제</button>
-                            </td>
-                        </tr>
                 </tbody>
             </table>
 
@@ -93,7 +97,7 @@
                         </select>
                     </div>
                     <div class="col-sm-8">
-                        <input type="text" name="kw" value="" class="form-control" placeholder="검색어를 입력해주세요">
+                        <input type="text" name="kw" value="{{kw}}" class="form-control" placeholder="검색어를 입력해주세요">
                     </div>
                     <div class="col-sm-1">
                         <button class="btn btn-dark" style="width: 100%;">검색</button>
@@ -117,12 +121,23 @@
                             <form>
                                 <!-- Add post form fields -->
                                 <div class="mb-3">
+                                    <label for="media_type_id" class="form-label">Type</label>
+                                    <select class="form-select" id="editType">
+                                        <option value="1">1 - main slot</option>
+                                        <option value="2">2 - side slot</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
                                     <label for="title" class="form-label">Title</label>
                                     <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
                                 </div>
                                 <div class="mb-3">
                                     <label for="text" class="form-label">Text</label>
                                     <textarea class="form-control" id="text" name="text" rows="3" placeholder="Enter text"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="advertiser" class="form-label">Advertiser</label>
+                                    <input type="text" class="form-control" id="advertiser" name="advertiser" placeholder="Enter advertiser">
                                 </div>
                                 <div class="mb-3">
                                     <b>Exposure DateTime</b><br>
@@ -139,9 +154,14 @@
                                     <input type="number" class="form-control" id="count" name="count" placeholder="Enter count">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="exposure" class="form-label">Regdate</label>
-                                    <input type="datetime-local" class="form-control" id="exposure" name="exposure">
+                                    <label for="url" class="form-label">URL</label>
+                                    <input type="text" class="form-control" id="url" name="url" placeholder="Enter url">
                                 </div>
+                                <div class="mb-3">
+                                    <label for="content_path" class="form-label">Content Path</label>
+                                    <input type="text" class="form-control" id="content_path" name="content_path" placeholder="Enter content path">
+                                </div>
+                                
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -179,7 +199,7 @@
                             </div>
 
                             <div class="modal-footer">
-                                <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#webViewModal">Web View</a>
+                                <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#webViewModal" id="webViewOpenBtn" onclick="clickWebView()">Web View</a>
                                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
                             </div>
                         </div>
@@ -196,30 +216,32 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-
                             <div id="webContent">
                                 <div class="ad-image-container">
-                                    <h3>Main AD</h3>
-                                    <img src="a" alt="Main AD" id="mainAdImage" class="ad-image">
-                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                    <h5>Main AD</h5>
+                                    <img src="#" alt="Main AD" id="mainAdImage" class="adImage" title="12312124141232131">
+                                    <button id="hitBtn0" class="btn btn-danger" >Hit</button>
                                 </div>
+                                <hr>
                                 <div class="ad-image-container">
-                                    <h3>Main AD</h3>
-                                    <img src="a" alt="Main AD" id="sideAdImage1" class="ad-image">
-                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                    <h5>sub AD1</h5>
+                                    <img src="#" alt="sub AD1" id="1" class="adImage" title="12312124141232131">
+                                    <button id="hitBtn1" class="btn btn-danger" >Hit</button>
                                 </div>
+                                <hr>
                                 <div class="ad-image-container">
-                                    <h3>Main AD</h3>
-                                    <img src="a" alt="Main AD" id="sideAdImage2" class="ad-image">
-                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                    <h5>sub AD2</h5>
+                                    <img src="#" alt="sub AD2" id="2" class="adImage" title="12312124141232131">
+                                    <button id="hitBtn2" class="btn btn-danger" >Hit</button>
                                 </div>
+                                <hr>
                                 <div class="ad-image-container">
-                                    <h3>Main AD</h3>
-                                    <img src="a" alt="Main AD" id="sideAdImage3" class="ad-image">
-                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                    <h5>sub AD3</h5>
+                                    <img src="#" alt="sub AD3" id="3" class="adImage" title="12312124141232131">
+                                    <button id="hitBtn3" class="btn btn-danger" >Hit</button>
                                 </div>
                             </div>
-                            
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
                         </div>
@@ -227,6 +249,7 @@
                 </div>
             </div>
 
+            
             <!-- 상세 Modal -->
             <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -236,7 +259,11 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <pre id="jsonString"></pre>
+                            <!-- Result와 JSON 불러올 틀 -->
+                            <div id="jsonTextarea" class="modal-body">
+                                <pre id="detailJson"></pre>
+                                <textarea id="detailTextarea" rows="10" readonly class="form-control">{"code": 0, "msg": "OK", "data": [{"id": "28", "media_type_id": "1", "name": "\b\b\uc30d\uc6a9\uc608\uac00", "definition": "\uac70\uc8fc\uc790  \uc774\ubca4\ud2b8", "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views", "content_path": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views"}, {"id": "34", "media_type_id": "2", "name": "\b\ud1a0\uccb4\ud2f0", "definition": "\ud1a0\uccb4\ud2f0 \ub9c8\uc6b0\uc2a4  \uc774\ubca4\ud2b8", "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views", "content_path": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views"}, {"id": "31", "media_type_id": "2", "name": "\uad6d\ubbfc\ub300\ud559\uad50", "definition": "\uad6d\ubbfc\ub300\ud559\uad50 \uc785\ud559 \uc774\ubca4\ud2b8", "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views", "content_path": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views"}, {"id": "33", "media_type_id": "2", "name": "\b\ud1a0\uccb4\ud2f0", "definition": "\ud1a0\uccb4\ud2f0 \ud0a4\ubcf4\ub4dc \uc774\ubca4\ud2b8", "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views", "content_path": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views"}]}</textarea>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -258,10 +285,8 @@
                                 <div class="mb-3">
                                     <label for="editType" class="form-label">Type</label>
                                     <select class="form-select" id="editType">
-                                        <option value="type1">main slot</option>
-                                        <option value="type2">side slot1</option>
-                                        <option value="type3">side slot2</option>
-                                        <option value="type4">side slot3</option>
+                                        <option value="1">1 - main slot</option>
+                                        <option value="2">2 - side slot</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -271,6 +296,10 @@
                                 <div class="mb-3">
                                     <label for="editText" class="form-label">Text</label>
                                     <textarea class="form-control" id="editText" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="advertiser" class="form-label">Advertiser</label>
+                                    <input type="text" class="form-control" id="advertiser" name="advertiser" placeholder="Enter advertiser">
                                 </div>
                                 <div class="mb-3">
                                     <label for="editStartDate" class="form-label">Start Date</label>
@@ -312,30 +341,97 @@
             });
         </script>
 
-        <!-- 상세 -->
-        <script>
-                async function showDetail(jsonUrl) {
-                    // 서버로부터 JSON 데이터 가져오기
-                    await fetch('#')
-                        .then(response => response.json())
-                        .then(data => {
-                            // JSON 데이터를 문자열로 변환하여 모달 창에 표시
-                            document.getElementById("jsonString").textContent = JSON.stringify(data, null, 2);
-                            // 모달 열기
-                            $('#detailModal').modal('show');
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-                }
-        </script>
-
-        <!-- AD Test -->
+        
         <script>
             var jsonData;
+            // Board AD List
+            // 게시판 리스트 가져오기
+            // 'http://172.20.10.12:8080/test_list/adlist' : 게시판에 들어가는 것들
+
+            // main.js
+            document.addEventListener('DOMContentLoaded', function() {
+                fetchData();
+            });
+
+            async function fetchData() {
+                try {
+                    const response = await fetch('http://localhost:4040/test_list/adlist');  // 실제 서버 주소와 데이터 엔드포인트로 수정
+                    if (!response.ok) {
+                        throw new Error('Network response was not OK.');
+                    }
+                    const data = await response.json();
+                    console.log(data);
+                    createTable(data);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            function createTable(data) {
+                const tableBody = document.querySelector('#data-table tbody');
+                console.log(typeof(data));
+                console.log(typeof(data.data));
+                console.log(JSON.stringify(data));
+                console.log(JSON.parse(data.data));
+
+                JSON.parse(data.data).forEach(function(item,index) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index+1}</td>
+                        <td>${item.fields.name}</td>
+                        <td>${item.fields.definition}</td>
+                        <td>${item.fields.start_date+' ~ '+item.fields.end_date}</td>
+                        <td>${item.fields.click_cnt}</td>
+                        <td>${item.fields.advertiser}</td>
+                        <td>
+                            <a type="button" id="detailButton" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#detailModal">상세</a>
+                            <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal">수정</a>
+                            <button type="button" class="btn btn-danger" onclick="deletePost()">삭제</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+             
+            // // 상세 버튼 클릭시
+            // // JSON 파일 로드
+            // async function showDetail() {
+            //     await fetch('http://localhost:8080/test_list/adlist')
+            //         .then(function(response) {
+            //             if (!response.ok) { // 응답이 성공(200-299 범위)가 아닌 경우
+            //                 throw new Error('Network response was not OK.');
+            //             }
+            //             return response.json(); // JSON 형식으로 변환하여 반환
+            //         })
+            //         .then(function(data) {
+            //             jsonDetailData = data;
+            //             displayJSON();
+            //         })
+            //         .catch(function(error) {
+            //             console.error('Error:', error);
+            //         });
+            // }
+          
+            // // JSON 데이터 표시
+            // async function displayJSON() {
+            //     var textarea = document.getElementById('detailTextarea');
+            //     textarea.value = JSON.stringify(jsonDetailData, null, 2);
+            //     $('#detailModal').modal('show');
+            // }
+
+            // // Click '상세' Button
+            // var detailButton = document.getElementById('detailButton');
+            // detailButton.addEventListener('click', function() {
+            //     displayJSON();
+            // });
+
+            // showDetail();
+
+
+            // AD Test
             // JSON 파일 로드
             async function clickTest() {
-                await fetch('http://172.20.10.12:8080/test_list/adlist')
+                await fetch('http://localhost:4040/send_list/send_ad_list')
                     .then(function(response) {
                         if (!response.ok) { // 응답이 성공(200-299 범위)가 아닌 경우
                             throw new Error('Network response was not OK.');
@@ -353,13 +449,11 @@
           
             // JSON 데이터 표시
             async function displayJSON() {
-                await clickTest();
+            // await clickTest();
             //   var result = document.getElementById('result');
             //   result.textContent = JSON.stringify(jsonData, null, 2);
                 var textarea = document.getElementById('resultTextarea');
                 textarea.value = JSON.stringify(jsonData, null, 2)
-
-              
             }
           
             // Send Target Button
@@ -368,58 +462,131 @@
                 displayJSON();
             });
 
+            clickTest();
+
         </script>
+
+        <!--상세---------------------------------------------------------------------->
+        <script>
+            // 버튼 클릭 이벤트 핸들러
+            document.addEventListener('Loaded', function() {
+              var button = document.querySelector('button[data-target="#detailModal"]');
+              button.addEventListener('click', function() {
+                console.log('ㅠㅠ')
+                // API 호출 및 결과 받아오기
+                fetch('http://localhost:4040/test_list/adlist')
+                    .then(function(response) {
+                        return response.json(); // 응답을 JSON으로 변환
+                    })
+                    .then(function(apiResult) {
+                        // JSON 문자열로 변환하여 모달 창에 표시
+                        var detailJson = document.getElementById('detailJson');
+                        detailJson.textContent = JSON.stringify(apiResult, null, 2);
+                        var detailTextarea = document.getElementById('detailTextarea');
+                        detailTextarea.value = JSON.stringify(apiResult, null, 2);
+                    })
+                    .catch(function(error) {
+                        console.error('API 호출 오류:', error);
+                    });
+                });
+            });
+        </script>
+        <!------------------------------------------------------------------------>
 
         <!-- Web View -->
         <script>
+            const btn = document.getElementById("webViewOpenBtn");
+            btn.addEventListener('click',clickWebView);
 
-            const adList = [
-                {
-                    adId: 1,
-                    src: "https://www.treehugger.com/thmb/vtHRAohwtwiPKA_5weRwLoGy95E=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/portrait-of-male-lion-135787269-85149ca53052474bb429fa73fdc381dc.jpg",
-                    type: 'main'
-                },
-                {
-                    adId: 2,
-                    src: "a",
-                    type: 'sub'
-                },
-                {
-                    adId: 3,
-                    src: "a",
-                    type: 'sub'
-                },
-                {
-                    adId: 4,
-                    src: "a",
-                    type: 'sub'
+            const hitBtn0 = document.getElementById("hitBtn0");
+            const hitBtn1 = document.getElementById("hitBtn1");
+            const hitBtn2 = document.getElementById("hitBtn2");
+            const hitBtn3 = document.getElementById("hitBtn3");
+            
+            hitBtn0.onclick = () => hitAd(document.getElementById("mainAdImage").title);
+            hitBtn1.onclick = () => hitAd(document.getElementById("1").title);
+
+            hitBtn2.onclick = () => hitAd(document.getElementById("2").title);
+            hitBtn3.onclick = () => hitAd(document.getElementById("3").title);
+
+            function clickWebView() {
+                console.log("click");
+                const adList = [
+                    {
+                        "id": "28",
+                        "media_type_id": "1",
+                        "name": "\b\b\uc30d\uc6a9\uc608\uac00",
+                        "definition": "\uac70\uc8fc\uc790  \uc774\ubca4\ud2b8",
+                        "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views",
+                        "content_path": "https://blog.kakaocdn.net/dn/Fy2zI/btqwBPVJO16/vrhssEpzL2jeMoSWDqRYkK/img.jpg"
+                    },
+                    {
+                        "id": "34",
+                        "media_type_id": "2",
+                        "name": "\b\ud1a0\uccb4\ud2f0",
+                        "definition": "\ud1a0\uccb4\ud2f0 \ub9c8\uc6b0\uc2a4  \uc774\ubca4\ud2b8",
+                        "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views",
+                        "content_path": "https://blog.kakaocdn.net/dn/cr7qJj/btqwZi9lkWx/sbcK3Q5ngTEqu1x6TPn0eK/img.jpg"
+                    },
+                    {
+                        "id": "33",
+                        "media_type_id": "2",
+                        "name": "\b\ud1a0\uccb4\ud2f0",
+                        "definition": "\ud1a0\uccb4\ud2f0 \ud0a4\ubcf4\ub4dc \uc774\ubca4\ud2b8",
+                        "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views",
+                        "content_path": "https://www.mediatoday.co.kr/news/photo/202301/307928_423314_2756.jpg"
+                    },
+                    {
+                        "id": "31",
+                        "media_type_id": "2",
+                        "name": "\uad6d\ubbfc\ub300\ud559\uad50",
+                        "definition": "\uad6d\ubbfc\ub300\ud559\uad50 \uc785\ud559 \uc774\ubca4\ud2b8",
+                        "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views",
+                        "content_path": "https://www.hyundai.com/static/images/hyu_logo_og_image.jpg"
+                    }
+                ]
+                
+                function loadAD(){
+                    AD = fetch("http://localhost:8081/detection/ADList").response;
+                    console.log(AD);
                 }
-            ];
+                loadAD()
 
-            const json_data = JSON.stringify(adList);
-            console.log(json_data);
-            var idx = 1
+                console.log(adList);
+                const json_data = JSON.stringify(adList);
+                console.log(json_data);
+                var idx = 1
+                for (var i=0; i<4; i++){
+                    if(adList[i].media_type_id == "1"){
+                        console.log("main")
+                        console.log(adList[i].content_path);
+                        document.getElementById("mainAdImage").src = adList[i].content_path;
+                        document.getElementById("mainAdImage").title = adList[i].id
+                        console.log("ID TEST" + document.getElementById("mainAdImage").title )
+                    }
+                    if(adList[i].media_type_id == "2"){
+                        console.log("sub")
+                        document.getElementById(idx.toString()).src = adList[i].content_path;
+                        document.getElementById(idx.toString()).title = adList[i].id
+                        console.log("ID TEST" + document.getElementById(idx.toString()).title )
 
-            for (var i=0; i<4; i++){
-                if(adList[i].type == "main"){
-                    document.getElementById("mainAdImage").src = adList[i].src;
-                }
-                if(adList[i].type == "sub"){
-                    document.getElementById("sideAdImage"+idx.toString()).src = adList[i].src;
-                    idx++
+                        idx++
+                    }
                 }
             }
+
             function openWebViewModal() {               
                 // 웹 뷰 모달 창 열기
                 $('#webViewModal').modal('show');
             }
 
-            function hitAd(ad_id) {
+            function hitAd(x) {
                 // 히트 전송 로직 구현
                 //localhost:8080/Hit?adid={}
+                fetch("http://localhost:8081/detection/hit?adid="+x)
 
-                console.log("Hit Ad: ", ad_id);
-                fetch(     localhost:8080/Hit?adid={32}.then(response~~~~))
+                console.log("Hit Ad: ", x);
+
 
             }
         </script>

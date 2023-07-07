@@ -48,6 +48,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'test_list.apps.TestListConfig',
+<<<<<<< HEAD
+=======
+    'send_list.apps.SendListConfig',
+>>>>>>> origin/eojin-branch
     # 'test_list.apps.TestListConfig'는 사용자 정의 앱인 'test_list'의 설정
     'corsheaders', 
     # 'corsheaders'는 CORS(Cross-Origin Resource Sharing) 관련 앱

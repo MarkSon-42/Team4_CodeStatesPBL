@@ -36,8 +36,13 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+<<<<<<< HEAD
     'management.apps.ManagementConfig',
     'mathfilters',
+=======
+    'mathfilters',
+    'management.apps.ManagementConfig',
+>>>>>>> origin/eojin-branch
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
