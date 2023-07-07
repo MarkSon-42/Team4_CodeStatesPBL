@@ -219,26 +219,26 @@
                             <div id="webContent">
                                 <div class="ad-image-container">
                                     <h5>Main AD</h5>
-                                    <img src="#" alt="Main AD" id="mainAdImage" class="adImage">
-                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                    <img src="#" alt="Main AD" id="mainAdImage" class="adImage" title="12312124141232131">
+                                    <button id="hitBtn0" class="btn btn-danger" >Hit</button>
                                 </div>
                                 <hr>
                                 <div class="ad-image-container">
                                     <h5>sub AD1</h5>
-                                    <img src="#" alt="sub AD1" id="1" class="adImage">
-                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                    <img src="#" alt="sub AD1" id="1" class="adImage" title="12312124141232131">
+                                    <button id="hitBtn1" class="btn btn-danger" >Hit</button>
                                 </div>
                                 <hr>
                                 <div class="ad-image-container">
                                     <h5>sub AD2</h5>
-                                    <img src="#" alt="sub AD2" id="2" class="adImage">
-                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                    <img src="#" alt="sub AD2" id="2" class="adImage" title="12312124141232131">
+                                    <button id="hitBtn2" class="btn btn-danger" >Hit</button>
                                 </div>
                                 <hr>
                                 <div class="ad-image-container">
                                     <h5>sub AD3</h5>
-                                    <img src="#" alt="sub AD3" id="3" class="adImage">
-                                    <button class="btn btn-danger" onclick="hitAd(1)">Hit</button>
+                                    <img src="#" alt="sub AD3" id="3" class="adImage" title="12312124141232131">
+                                    <button id="hitBtn3" class="btn btn-danger" >Hit</button>
                                 </div>
                             </div>
                         </div>
@@ -262,7 +262,7 @@
                             <!-- Result와 JSON 불러올 틀 -->
                             <div id="jsonTextarea" class="modal-body">
                                 <pre id="detailJson"></pre>
-                                <textarea id="detailTextarea" rows="10" readonly class="form-control"></textarea>
+                                <textarea id="detailTextarea" rows="10" readonly class="form-control">{"code": 0, "msg": "OK", "data": [{"id": "28", "media_type_id": "1", "name": "\b\b\uc30d\uc6a9\uc608\uac00", "definition": "\uac70\uc8fc\uc790  \uc774\ubca4\ud2b8", "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views", "content_path": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views"}, {"id": "34", "media_type_id": "2", "name": "\b\ud1a0\uccb4\ud2f0", "definition": "\ud1a0\uccb4\ud2f0 \ub9c8\uc6b0\uc2a4  \uc774\ubca4\ud2b8", "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views", "content_path": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views"}, {"id": "31", "media_type_id": "2", "name": "\uad6d\ubbfc\ub300\ud559\uad50", "definition": "\uad6d\ubbfc\ub300\ud559\uad50 \uc785\ud559 \uc774\ubca4\ud2b8", "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views", "content_path": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views"}, {"id": "33", "media_type_id": "2", "name": "\b\ud1a0\uccb4\ud2f0", "definition": "\ud1a0\uccb4\ud2f0 \ud0a4\ubcf4\ub4dc \uc774\ubca4\ud2b8", "url": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views", "content_path": "https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Generic_views"}]}</textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -355,7 +355,7 @@
 
             async function fetchData() {
                 try {
-                    const response = await fetch('http://localhost:8080/test_list/adlist');  // 실제 서버 주소와 데이터 엔드포인트로 수정
+                    const response = await fetch('http://localhost:4040/test_list/adlist');  // 실제 서버 주소와 데이터 엔드포인트로 수정
                     if (!response.ok) {
                         throw new Error('Network response was not OK.');
                     }
@@ -431,7 +431,7 @@
             // AD Test
             // JSON 파일 로드
             async function clickTest() {
-                await fetch('http://localhost:8080/send_list/send_ad_list')
+                await fetch('http://localhost:4040/send_list/send_ad_list')
                     .then(function(response) {
                         if (!response.ok) { // 응답이 성공(200-299 범위)가 아닌 경우
                             throw new Error('Network response was not OK.');
@@ -474,7 +474,7 @@
               button.addEventListener('click', function() {
                 console.log('ㅠㅠ')
                 // API 호출 및 결과 받아오기
-                fetch('http://172.20.10.12:8080/test_list/adlist')
+                fetch('http://localhost:4040/test_list/adlist')
                     .then(function(response) {
                         return response.json(); // 응답을 JSON으로 변환
                     })
@@ -497,6 +497,18 @@
         <script>
             const btn = document.getElementById("webViewOpenBtn");
             btn.addEventListener('click',clickWebView);
+
+            const hitBtn0 = document.getElementById("hitBtn0");
+            const hitBtn1 = document.getElementById("hitBtn1");
+            const hitBtn2 = document.getElementById("hitBtn2");
+            const hitBtn3 = document.getElementById("hitBtn3");
+            
+            hitBtn0.onclick = () => hitAd(document.getElementById("mainAdImage").title);
+            hitBtn1.onclick = () => hitAd(document.getElementById("1").title);
+
+            hitBtn2.onclick = () => hitAd(document.getElementById("2").title);
+            hitBtn3.onclick = () => hitAd(document.getElementById("3").title);
+
             function clickWebView() {
                 console.log("click");
                 const adList = [
@@ -533,6 +545,12 @@
                         "content_path": "https://www.hyundai.com/static/images/hyu_logo_og_image.jpg"
                     }
                 ]
+                
+                function loadAD(){
+                    AD = fetch("http://localhost:8081/detection/ADList").response;
+                    console.log(AD);
+                }
+                loadAD()
 
                 console.log(adList);
                 const json_data = JSON.stringify(adList);
@@ -543,10 +561,15 @@
                         console.log("main")
                         console.log(adList[i].content_path);
                         document.getElementById("mainAdImage").src = adList[i].content_path;
+                        document.getElementById("mainAdImage").title = adList[i].id
+                        console.log("ID TEST" + document.getElementById("mainAdImage").title )
                     }
                     if(adList[i].media_type_id == "2"){
                         console.log("sub")
                         document.getElementById(idx.toString()).src = adList[i].content_path;
+                        document.getElementById(idx.toString()).title = adList[i].id
+                        console.log("ID TEST" + document.getElementById(idx.toString()).title )
+
                         idx++
                     }
                 }
@@ -557,11 +580,13 @@
                 $('#webViewModal').modal('show');
             }
 
-            function hitAd(ad_id) {
+            function hitAd(x) {
                 // 히트 전송 로직 구현
                 //localhost:8080/Hit?adid={}
+                fetch("http://localhost:8081/detection/hit?adid="+x)
 
-                console.log("Hit Ad: ", ad_id);
+                console.log("Hit Ad: ", x);
+
 
             }
         </script>
